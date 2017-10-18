@@ -17,9 +17,12 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    //TODO (1) buat variabel Widget UI
+    private Button btnBook;
+    private RadioGroup rgAdditional;
+    private RadioButton rbAdditional;
+    private EditText etJumlah;
+    private Spinner spClass,spFilm;
 
-    //data source
     private List<String> classCinematix;
     private List<String> filmCinematix;
 
@@ -28,11 +31,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //TODO (2) definisikan masing-masing widget sesuai dengan layout xml
+        // Spinner Element
+        spClass = (Spinner) findViewById(R.id.sp_class);
+        spFilm = (Spinner) findViewById(R.id.sp_movie);
 
-        /*
-        spClass.setOnItemSelectedListener(this);
-        spFilm.setOnItemSelectedListener(this);*/
+        // Radio element
+        rgAdditional = (RadioGroup) findViewById(R.id.rg_additional);
+
+        // EditText Element
+        etJumlah = (EditText) findViewById(R.id.edt_jumlah);
 
         // Spinner Dropdown elements
         classCinematix = new ArrayList<String>();
@@ -57,16 +64,44 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<String> classCinematixAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, classCinematix);
         ArrayAdapter<String> filmCinematixAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, filmCinematix);
 
-        // Drop down layout style - list view with radio button
-        /*classCinematixAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        filmCinematixAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);*/
 
         // Attaching data adapter to spinner
-        /*spClass.setAdapter(classCinematixAdapter);
-        spFilm.setAdapter(filmCinematixAdapter);*/
+        spClass.setAdapter(classCinematixAdapter);
+        spFilm.setAdapter(filmCinematixAdapter);
 
-        //TODO (3) validasi inputan data saat tombol "PESAN TIKET" di klik
-        //TODO (4) kirim data yang sudah valid ke UI (Activity) berikutnya dengan menggunakan intent
+        btnBook = (Button) findViewById(R.id.btn_book);
+        btnBook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                boolean valid = true;
+
+                if (etJumlah.getText().length() < 1) {
+                    etJumlah.setError("Wajib diisi!");
+                    valid = false;
+                } else if (Integer.parseInt(etJumlah.getText().toString()) < 1) {
+                    etJumlah.setError("Minimal 1 tiket");
+                    valid = false;
+                }
+
+                if (valid) {
+
+                    Intent intent = new Intent(MainActivity.this, ResultActivity.class);
+
+                    intent.putExtra("classCinematix", spClass.getSelectedItem().toString());
+                    intent.putExtra("filmCinematix", spFilm.getSelectedItem().toString());
+
+                    int selectedId = rgAdditional.getCheckedRadioButtonId();
+                    rbAdditional = (RadioButton) findViewById(selectedId);
+                    intent.putExtra("additionalCinematix", rbAdditional.getText().toString());
+
+                    intent.putExtra("jumlahCinematix", etJumlah.getText().toString());
+
+                    startActivity(intent);
+
+                }
+            }
+        });
 
     }
 }
