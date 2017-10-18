@@ -35,13 +35,49 @@ public class ResultActivity extends AppCompatActivity {
 
         // Declare intent here
         Intent intent = getIntent();
-        //TODO (3) Ambil data yang dikirim via Intent, kemudian tampilkan ke UI
+
+        final String classCinematix = intent.getStringExtra("classCinematix");
+        tvClass.setText(classCinematix);
+
+        final String movieCinematix = intent.getStringExtra("filmCinematix");
+        tvMovie.setText(movieCinematix);
+
+        int rate = getPriceBasedOnClass(classCinematix);
+        tvRate.setText(convertMoney(rate));
+
+        final String additional = intent.getStringExtra("additionalCinematix");
+        int priceAdditional = getPriceBasedOnAdditional(additional);
+        tvAdditional.setText(additional+ " : "+convertMoney(priceAdditional) );
+
+        final String jumlah = intent.getStringExtra("jumlahCinematix");
+        tvJumlah.setText(jumlah);
+
+        // Sub total
+        int priceClass = getPriceBasedOnClass(classCinematix);
+
+        int subTotalMovie = priceClass * Integer.valueOf(jumlah);
+        tvSubTotalTicket.setText(convertMoney(subTotalMovie));
+
+        int subTotalAddtional = priceAdditional * Integer.valueOf(jumlah);
+        tvSubTotalAddtional.setText(convertMoney(subTotalAddtional));
+
+        // Total
+        final int total = subTotalMovie + subTotalAddtional;
+        tvTotal.setText(convertMoney(total));
 
         btnShare = (Button) findViewById(R.id.btn_share);
         btnShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO (4) Setup tombol share untuk membagikan tiket yang dipesan
+                String sendText = "Memesan " + jumlah + " tiket " +
+                        movieCinematix + ". Kelas " + classCinematix +
+                        ", include popcorn dan soda : " + additional + ".\n" +
+                        "Total Harga : " + convertMoney(total);
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, sendText);
+                sendIntent.setType("text/plain");
+                startActivity(Intent.createChooser(sendIntent, "Bagikan"));
             }
         });
     }
